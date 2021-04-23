@@ -1,3 +1,4 @@
+from flask import Flask, make_response, jsonify, request
 from mysql import connector
 from mysql.connector import errorcode
 from configparser import ConfigParser
@@ -70,6 +71,60 @@ def delete(tableName, id=None):
     except Exception as e:
         return handleErrors(e)
 
+app = Flask(__name__)
+
+@app.route('/api/execute', methods=['GET'])
+def selectEndpoint():
+    tablename = request.args.get('tablename')
+    if tablename is None:
+        tablename = "USERS"
+    response = select(tablename)
+    if response and type(response) != type("s"):
+        return jsonify(data=select(tablename))
+    else:
+        return make_response(jsonify(hata=response), 400)
+
+
+@app.route('/api/execute', methods=['POST', 'PUT'])
+def insertEndpoint():
+    tablename = request.args.get('tablename')
+    if tablename is None:
+        tablename = "USERS"
+    body = request.get_json()
+    try:
+        response = insert(tablename, body['name'], body['lastname'], body['email'])
+        if response == 'SUCCESS':
+            return jsonify(status=True, Message=response)
+        else:
+            return make_response(jsonify(hata=response), 400)
+    except Exception as e:
+        logging.error(str(e))
+        return make_response(jsonify(info="Parametre isimleri dogru girilmeli" ,hata=str(e)), 400)
+
+@app.route('/api/execute', methods=['DELETE'])
+def deleteEndpoint():
+    tablename = request.args.get('tablename')
+    if tablename is None:
+        tablename = "USERS"
+    body = request.get_json()
+    try:
+        if type(body['id']) == type([1, 2]):
+            
+            for iterId in body['id']:
+                print(iterId)
+                response = delete(tablename, iterId)
+                if response != 'SUCCESS':
+                    return make_response(jsonify(hata=response), 400)
+        else:
+            response = delete(tablename, body['id'])
+        if response == 'SUCCESS':
+            return jsonify(status=True, Message=response)
+        else:
+            return make_response(jsonify(hata=response), 400)
+    except Exception as e:
+        logging.error(str(e))
+        return make_response(jsonify(info="Parametre isimleri dogru girilmeli" ,hata=str(e)), 400)
+
 
 if __name__ == '__main__':
-    print(insert("USERS"))
+    app.run(host=config['API']['HOST'], port=config['API']['PORT'], debug=True)
