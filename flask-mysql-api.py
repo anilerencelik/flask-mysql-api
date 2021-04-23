@@ -127,4 +127,4 @@ def deleteEndpoint():
 
 
 if __name__ == '__main__':
-    app.run(host=config['API']['HOST'], port=config['API']['PORT'], debug=True)
+    app.run(host=config['API']['HOST'], port=config['API']['PORT'], debug=False)
