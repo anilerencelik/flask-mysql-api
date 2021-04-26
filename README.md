@@ -6,6 +6,28 @@ Başlatmadan önce ana dizindeki cfg dosyasınıdaki [DB] sectionı doldurulmal�
 
 <hr>
 
+## Build 
+
+Build almak için 
+
+```sh
+docker build -t <image_ismi>:<tag> .
+```
+
+Alınan buildi çalıştırmak için 
+
+```sh
+docker run -tid -p 8080:8080 <verilenimageismi>:<tag>
+```
+
+Docker Hub üzerinden çekebilmek için
+
+```sh
+docker run -tid -p 8080:8080 anilerencelik/flask-mysql-api:0.2
+```
+
+<hr>
+
 ## SELECT
 
 `/api/execute` endpoint ine `GET`
